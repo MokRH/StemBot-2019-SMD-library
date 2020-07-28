@@ -1,8 +1,4 @@
-/* OLED screen is deactivate for this combined (RC/auto) program
-   because Arduino is out of memmory
-*/
-//#define OLED //activate this line to use OLED screen
-
+#define OLED
 #include "StemBot2019.h"
 #include "bluetooth.h"
 
@@ -22,7 +18,6 @@ void setup() {
   LED(1, 0, 1);
   KP = 0.15, KI = 0, KD = 5;
 }
-
 /*
    INSTRUCTIONS loop
    BT_receiver(yes/no display character received from BT);
@@ -33,6 +28,33 @@ void loop() {
     forward(200, 200);
   }
   if (BT_receiver(0) == 'S') {
+    Stop();
+  }
+  if (BT_receiver(0) == 'w') {
+    forward(200, 200);
+  }
+  else if (BT_receiver(0) == 's') {
+    backward(100, 100);
+  }
+  else if (BT_receiver(0) == 'a') {
+    turnLeft(100, 100);
+  }
+  else if (BT_receiver(0) == 'd') {
+    turnRight(100, 100);
+  }
+  else if (BT_receiver(0) == 'q') {
+    forward(0, 200);
+  }
+  else if (BT_receiver(0) == 'e') {
+    forward(200, 0);
+  }
+  else if (BT_receiver(0) == 'z') {
+    backward(0, 100);
+  }
+  else if (BT_receiver(0) == 'c') {
+    backward(100, 0);
+  }
+  else if (BT_receiver(0) == 'S') {
     Stop();
   }
 }
