@@ -142,14 +142,14 @@ void alignment(int alignL, int alignR, int _invert_L, int _invert_R, int align_t
   offsetL = alignL;     offsetR = alignR;
   if (align_test == 1) {
     forward(255, 255);
-    delay(3000);
+    delay(2000);
     Stop();
     while (1);
   }
 }
 
 int IR1_avg = 0,   IR2_avg = 0,   IR3_avg = 0,   IR4_avg = 0,   IR5_avg = 0;
-void calibrateIR(int i) {
+void calibrateIR(int i, int auto_) {
   int IR1_min = 1023, IR2_min = 1023, IR3_min = 1023, IR4_min = 1023, IR5_min = 1023;
   int IR1_max = 0,   IR2_max = 0,   IR3_max = 0,   IR4_max = 0,   IR5_max = 0;
 #ifdef OLED
@@ -157,8 +157,14 @@ void calibrateIR(int i) {
   display.println(" CALBRATE ");
   display.println("----------");
   display.println("  SENSOR  ");
-  display.println("----------");
-  display.display();
+  if (auto_ == 0) {
+    display.println("--manual--");
+    display.display();
+  }
+  else {
+    display.println("---auto---");
+    display.display();
+  }
 #endif
   int j = i * 100, k = 0, kk = 0, state = 0;
   do {
@@ -168,45 +174,90 @@ void calibrateIR(int i) {
       state = !state;
       LED(state, state, state);
     }
-    int IR1_cal = analogRead(IR1); delay(2);
-    if (IR1_cal < IR1_min) {
-      IR1_min = IR1_cal;
+    if (auto_ == 0) { //manual calibrate
+      int IR1_cal = analogRead(IR1); delay(2);
+      if (IR1_cal < IR1_min) {
+        IR1_min = IR1_cal;
+      }
+      else if (IR1_cal > IR1_max) {
+        IR1_max = IR1_cal;
+      }
+      int IR2_cal = analogRead(IR2); delay(2);
+      if (IR2_cal < IR2_min) {
+        IR2_min = IR2_cal;
+      }
+      else if (IR2_cal > IR2_max) {
+        IR2_max = IR2_cal;
+      }
+      int IR3_cal = analogRead(IR3); delay(2);
+      if (IR3_cal < IR3_min) {
+        IR3_min = IR3_cal;
+      }
+      else if (IR3_cal > IR3_max) {
+        IR3_max = IR3_cal;
+      }
+      int IR4_cal = analogRead(IR4); delay(2);
+      if (IR4_cal < IR4_min) {
+        IR4_min = IR4_cal;
+      }
+      else if (IR4_cal > IR4_max) {
+        IR1_max = IR4_cal;
+      }
+      int IR5_cal = analogRead(IR5); delay(2);
+      if (IR5_cal < IR5_min) {
+        IR5_min = IR5_cal;
+      }
+      else if (IR5_cal > IR5_max) {
+        IR5_max = IR5_cal;
+      }
     }
-    else if (IR1_cal > IR1_max) {
-      IR1_max = IR1_cal;
-    }
-    int IR2_cal = analogRead(IR2); delay(2);
-    if (IR2_cal < IR2_min) {
-      IR2_min = IR2_cal;
-    }
-    else if (IR2_cal > IR2_max) {
-      IR2_max = IR2_cal;
-    }
-    int IR3_cal = analogRead(IR3); delay(2);
-    if (IR3_cal < IR3_min) {
-      IR3_min = IR3_cal;
-    }
-    else if (IR3_cal > IR3_max) {
-      IR3_max = IR3_cal;
-    }
-    int IR4_cal = analogRead(IR4); delay(2);
-    if (IR4_cal < IR4_min) {
-      IR4_min = IR4_cal;
-    }
-    else if (IR4_cal > IR4_max) {
-      IR4_max = IR4_cal;
-    }
-    int IR5_cal = analogRead(IR5); delay(2);
-    if (IR5_cal < IR5_min) {
-      IR5_min = IR5_cal;
-    }
-    else if (IR5_cal > IR5_max) {
-      IR5_max = IR5_cal;
+    else { //auto calibrate
+      int IR1_cal = analogRead(IR1); delay(2);
+      if (IR1_cal < IR1_min) {
+        IR1_min = IR1_cal;
+      }
+      else if (IR1_cal > IR1_max) {
+        IR1_max = IR1_cal;
+      }
+      int IR2_cal = analogRead(IR2); delay(2);
+      if (IR2_cal < IR1_min) {
+        IR1_min = IR2_cal;
+      }
+      else if (IR2_cal > IR1_max) {
+        IR1_max = IR2_cal;
+      }
+      int IR3_cal = analogRead(IR3); delay(2);
+      if (IR3_cal < IR1_min) {
+        IR1_min = IR3_cal;
+      }
+      else if (IR3_cal > IR1_max) {
+        IR1_max = IR3_cal;
+      }
+      int IR4_cal = analogRead(IR4); delay(2);
+      if (IR4_cal < IR1_min) {
+        IR1_min = IR4_cal;
+      }
+      else if (IR4_cal > IR1_max) {
+        IR1_max = IR4_cal;
+      }
+      int IR5_cal = analogRead(IR5); delay(2);
+      if (IR5_cal < IR1_min) {
+        IR1_min = IR5_cal;
+      }
+      else if (IR5_cal > IR1_max) {
+        IR1_max = IR5_cal;
+      }
     }
   }
   while (i != 0 && k != j);
-  IR1_avg = (IR1_min + IR1_max) / 2; IR2_avg = (IR2_min + IR2_max) / 2; IR3_avg = (IR3_min + IR3_max) / 2;
-  IR4_avg = (IR4_min + IR4_max) / 2; IR5_avg = (IR5_min + IR5_max) / 2;
+  if (auto_ == 0) { //manual
+    IR1_avg = (IR1_min + IR1_max) / 2; IR2_avg = (IR2_min + IR2_max) / 2; IR3_avg = (IR3_min + IR3_max) / 2;
+    IR4_avg = (IR4_min + IR4_max) / 2; IR5_avg = (IR5_min + IR5_max) / 2;
+  }
+  else { //auto
+    IR1_avg = (IR1_min + IR1_max) / 2;
+    IR2_avg = IR1_avg, IR3_avg = IR1_avg, IR4_avg = IR1_avg, IR5_avg = IR1_avg;
+  }
   LED(0, 0, 0);
 
 }
@@ -485,7 +536,7 @@ void back_to_line (int speedL, int speedR, int line, int offsetIR) { // while go
 }
 
 unsigned long start_ms = 0;
-void bot_setup(int calibrate_time) {
+void bot_setup(int calibrate_time, int auto_calibrate) {
   //****************** OLED setup ******************//
 #ifdef OLED
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -563,7 +614,7 @@ void bot_setup(int calibrate_time) {
   delay(1000);
   //****************** check battery ******************//
 
-  calibrateIR(calibrate_time);
+  calibrateIR(calibrate_time, auto_calibrate);
 
   //****************** tell user ready to go ******************//
 #ifdef OLED
